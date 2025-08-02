@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 
-export const generatePDF = async (totalCells) => {
+export const generatePDF = async (totalCells, pdfTitle = null) => {
   const pdf = new jsPDF('portrait', 'pt', 'a4');
   
   // A4 dimensions in points (72 DPI)
@@ -38,6 +38,17 @@ export const generatePDF = async (totalCells) => {
     if (currentPage > 1) {
       pdf.addPage();
     }
+
+    // Add title if provided
+     if (currentPage === 1 && pdfTitle !== null)  {
+    pdf.setFontSize(18);
+    pdf.setFont('helvetica', 'bold');
+    const titleWidth = pdf.getTextWidth(pdfTitle);
+    pdf.text(pdfTitle, (pageWidth - titleWidth) / 2, margin - 10); // 10pt above grid
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+  }
+
     
     // Draw grid for current page
     const cellsOnThisPage = Math.min(cellsPerPage, totalCells - currentCell + 1);
@@ -63,18 +74,7 @@ export const generatePDF = async (totalCells) => {
       const textY = y + (cellHeight / 2) + 3; // Center vertically
       pdf.text(cellNumber.toString(), x + 5, textY);
       
-    //   // Optional: Add light grid lines in response area for writing
-    //   pdf.setLineWidth(0.25);
-    //   pdf.setDrawColor(200, 200, 200);
-    //   const lineSpacing = 12;
-    //   const linesInCell = Math.floor((cellHeight - 4) / lineSpacing);
-      
-    //   for (let line = 1; line <= linesInCell; line++) {
-    //     const lineY = y + 2 + (line * lineSpacing);
-    //     if (lineY < y + cellHeight - 2) {
-    //       pdf.line(x + numberLabelWidth + 2, lineY, x + cellWidth - 2, lineY);
-    //     }
-    //   }
+
     }
     
     // Add page footer

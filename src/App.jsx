@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { generatePDF } from './utils/pdfGenerator';
+import InstallButton from './InstallButton';
 
 function App() {
   const [number, setNumber] = useState('');
+  const [pdfTitle, setPdfTitle] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
 
@@ -31,7 +33,7 @@ function App() {
 
     setIsGenerating(true);
     try {
-      await generatePDF(parseInt(number));
+      await generatePDF(parseInt(number), pdfTitle);
     } catch (err) {
       setError('Failed to generate PDF. Please try again.');
       console.error('PDF generation error:', err);
@@ -49,7 +51,8 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-slate-800 rounded-lg shadow-2xl p-8 border border-slate-700">
+        <div className="bg-slate-800 relative rounded-lg shadow-2xl p-8 pt-16 border border-slate-700">
+        <InstallButton />
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-slate-100 mb-2">
               PDF Generator
@@ -80,6 +83,21 @@ function App() {
                 <p className="text-red-400 text-sm mt-2 font-mono">{error}</p>
               )}
             </div>
+            <div>
+              <label htmlFor="page-title" className="block text-sm font-medium text-slate-300 mb-2">
+                Page Title (Optional)
+              </label>
+              <input
+                id="page-title"
+                type="text"
+                value={pdfTitle}
+                onChange={(e) => setPdfTitle(e.target.value)}
+                placeholder="Enter a title..."
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                disabled={isGenerating}
+              />
+            </div>
+         
 
             <button
               onClick={handleGenerate}
